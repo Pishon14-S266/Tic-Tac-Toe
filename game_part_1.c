@@ -97,6 +97,8 @@ int validateMove(char *board, int size, int row, int col)
 }
 
 
+
+
 int checkWin (char *board, int size, char symbol)
 {
     
@@ -180,6 +182,43 @@ int checkDraw(char *board, int size)
     return 1; // All cells filled, it's a draw
 }
 
+void logGameState(char *board, int size, char currentPlayer, int moveCount)
+{
+    FILE *file = fopen("game_log.txt", "a"); // Open in append mode
+    if (file == NULL)
+    {
+        printf("Error opening log file.\n");
+        return;
+    }
+
+    fprintf(file, "Move %d by Player %c:\n", moveCount, currentPlayer);
+
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            fprintf(file, " %c ", board[i * size + j]);
+            if (j < size - 1)
+                fprintf(file, "|");
+        }
+        fprintf(file, "\n");
+
+        if (i < size - 1)
+        {
+            for (int k = 0; k < size; k++)
+            {
+                fprintf(file, "---");
+                if (k < size - 1)
+                    fprintf(file, "+");
+            }
+            fprintf(file, "\n");
+        }
+    }
+
+    fprintf(file, "\n");
+    fclose(file);
+}
+
 int main()
 {
     int size;
@@ -219,7 +258,9 @@ int main()
             }
         }
 
+        board[index] = currentPlayer;
         moveCount++;
+        logGameState(board, size, currentPlayer, moveCount);
 
         // Check win condition
         if (checkWin(board, size, currentPlayer))

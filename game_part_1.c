@@ -69,37 +69,33 @@ void displayBoard (char *board, int size)
 
 }
 
-void getPlayerMove (char *board, int size, char symbol)
+void getUserInput(int *row, int *col, char symbol)
 {
-    int row, col;
-    while (1)
-    {
-        printf("Player %c, enter your move (row and column): ", symbol);
-        scanf("%d %d", &row, &col);
-
-        // Range validate
-        if (row < 1 || row > size || col < 1 || col > size)
-        {
-            printf("Invalid position Try againn. \n");
-            continue;
-        }
-
-        // Converts the 2D array to a 1D array
-        int index = (row - 1) * size + (col - 1);
-
-        // To check whether the cell is empty
-        if (board[index] != ' ')
-        {
-            printf("Cell already occupied. Try again.\n");
-            continue;
-        }
-
-        board[index] = symbol;
-        break;
-
-
-    }
+    printf("Player %c, enter your move (row [space] column): ", symbol);
+    scanf("%d %d", row, col);
 }
+
+int validateMove(char *board, int size, int row, int col)
+{
+    // Range validation
+    if (row < 1 || row > size || col < 1 || col > size)
+    {
+        printf("Invalid position. Try again.\n");
+        return -1; // Invalid
+    }
+
+    int index = (row - 1) * size + (col - 1);
+
+    // Cell occupancy check
+    if (board[index] != ' ')
+    {
+        printf("Cell already occupied. Try again.\n");
+        return -1; // Invalid
+    }
+
+    return index; // Valid move
+}
+
 
 int checkWin (char *board, int size, char symbol)
 {
@@ -184,67 +180,78 @@ int checkDraw(char *board, int size)
     return 1; // All cells filled, it's a draw
 }
 
-int main ()
+int main()
 {
     int size;
     printf("Enter the size of the board (3-10): ");
     scanf("%d", &size);
 
-    // Check board size
-    while (size < 3 || size > 10)
+    // Validate board size
+    if (size < 3 || size > 10)
     {
         printf("Invalid board size. Please enter a value between 3 and 10.\n");
         return 1;
     }
 
-    // Initializing the game board - DONE
+    // Initialize board
     char *board = initializeBoard(size);
 
-    // Game variables - X and O
-    char currentPlayer = 'X'; // Starts with X player
+    // Game variables
+    char currentPlayer = 'X';
     int moveCount = 0;
 
-    //Game loop
+    // Game loop
     while (1)
     {
-        // Displaying the game board - DONE
         displayBoard(board, size);
 
-        // Validate and accepting user input - DONE
-        getPlayerMove(board, size, currentPlayer); 
+        int row, col, index;
 
-        // Track number of moves
-        moveCount++; 
+        // Accept and validate move
+        while (1)
+        {
+            getUserInput(&row, &col, currentPlayer); // Accepting user input
+            index = validateMove(board, size, row, col); // Validate user input and moves
+            if (index != -1)
+            {
+                board[index] = currentPlayer;
+                break;
+            }
+        }
 
-        // Checking win conditions
-        if(checkWin(board, size, currentPlayer))
+        moveCount++;
+
+        // Check win condition
+        if (checkWin(board, size, currentPlayer))
         {
             displayBoard(board, size);
             printf("Player %c wins!\n", currentPlayer);
             break;
         }
 
-        // To switch player
-        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
-        /* if (currentPlayer == 'X')
-            {
-                currentPlayer = 'O';
-            } 
-            else {
-                currentPlayer = 'X';
-            }
-        */
-
-        // Checking for a draw
+        // Check draw condition
         if (checkDraw(board, size))
         {
             displayBoard(board, size);
             printf("It's a draw!\n");
             break;
         }
-       
-        
-    }   
- 
-    return (0);
+
+        // Switch player
+        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+        /*
+            if (currentPlayer == 'X')
+            {
+                currentPlayer = 'O';
+            }
+            else
+            {
+                currentPlayer = 'X';
+            }
+        */
+    }
+
+    // Free memory
+    free(board);
+    return 0;
 }

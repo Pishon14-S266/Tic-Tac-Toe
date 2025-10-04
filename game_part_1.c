@@ -155,7 +155,7 @@ int checkWin (char *board, int size, char symbol)
     int diag2 = 0;
     for (int i = 0; i < size; i++)
     {
-        if (board[i * size - 1 - i] == symbol)
+        if (board[i * size + (size - 1 - i)] == symbol)
         {
             diag2++;
         }

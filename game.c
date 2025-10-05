@@ -7,17 +7,33 @@ typedef struct {
     	int isComputer; // 0 = human, 1 = computer
 } Player; 
 
-void setupPlayers (Player players[3])
+void setupPlayers(Player players[3]) 
 {
     	char symbols[3] = {'X', 'O', 'Z'};
+    	int humanCount;
 
-    	for (int i = 0; i < 3; i++)
-    	{	
-        	players[i].symbol = symbols[i];
-        	printf ("Is Player %c a computer? (1 for Yes, 0 for No): ", players[i].symbol);
-        	scanf ("%d", &players[i].isComputer);
-    	}
+    	do 
+	{
+        	humanCount = 0;
+        	for (int i = 0; i < 3; i++) 
+		{
+            		players[i].symbol = symbols[i];
+            		printf("Is Player %c a computer? (1 for Yes, 0 for No): ", players[i].symbol);
+            		scanf("%d", &players[i].isComputer);
+            		if (players[i].isComputer == 0) 
+			{
+                		humanCount++;
+            		}
+        	}
+
+        	if (humanCount == 0) 
+		{
+            		printf("At least one player must be a human. Please re-enter player roles.\n\n");
+        	}
+    	} 
+	while (humanCount == 0);
 }
+
 
 char *initializeBoard (int size)
 {
